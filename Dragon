@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <title>Dragon Pearl</title>
 
 <style>
 
 body{
-background:black;
+background:#000;
 color:white;
 text-align:center;
 font-family:Arial;
 }
 
 canvas{
-background:#111;
+background:#050505;
 border:3px solid #00ffff;
+box-shadow:0 0 20px #00ffff;
+}
+
+#score{
+font-size:22px;
+margin:10px;
 }
 
 </style>
@@ -23,70 +30,89 @@ border:3px solid #00ffff;
 <body>
 
 <h1>🐉 Dragon Pearl</h1>
-<p>Collect the pearls!</p>
+<div id="score">Score: 0</div>
 
-<canvas id="game" width="400" height="400"></canvas>
+<canvas id="game" width="500" height="500"></canvas>
 
 <script>
 
-let canvas = document.getElementById("game")
-let ctx = canvas.getContext("2d")
+let canvas=document.getElementById("game")
+let ctx=canvas.getContext("2d")
 
-let grid = 20
+let grid=20
 
-let snake = [{x:200,y:200}]
+let dragon=[{x:240,y:240}]
 
-let dx = grid
-let dy = 0
+let dx=grid
+let dy=0
 
-let pearl = {
-x: Math.floor(Math.random()*20)*grid,
-y: Math.floor(Math.random()*20)*grid
+let score=0
+
+let pearl={
+x:Math.floor(Math.random()*25)*grid,
+y:Math.floor(Math.random()*25)*grid
 }
 
 function game(){
 
-ctx.clearRect(0,0,400,400)
+ctx.fillStyle="black"
+ctx.fillRect(0,0,500,500)
 
-snake[0].x += dx
-snake[0].y += dy
+let headX=dragon[0].x+dx
+let headY=dragon[0].y+dy
+
+// wall collision
+if(headX<0||headX>=500||headY<0||headY>=500){
+alert("Game Over! Score: "+score)
+location.reload()
+}
 
 // eat pearl
-if(snake[0].x==pearl.x && snake[0].y==pearl.y){
+if(headX==pearl.x && headY==pearl.y){
 
-snake.push({})
+score++
+document.getElementById("score").innerText="Score: "+score
 
-pearl.x = Math.floor(Math.random()*20)*grid
-pearl.y = Math.floor(Math.random()*20)*grid
+pearl={
+x:Math.floor(Math.random()*25)*grid,
+y:Math.floor(Math.random()*25)*grid
+}
+
+}else{
+
+dragon.pop()
 
 }
 
-// draw pearl
-ctx.fillStyle="cyan"
-ctx.fillRect(pearl.x,pearl.y,grid,grid)
+let newHead={x:headX,y:headY}
+dragon.unshift(newHead)
 
-// draw snake
-ctx.fillStyle="lime"
+// draw dragon
+for(let i=0;i<dragon.length;i++){
 
-snake.forEach(function(part,index){
+ctx.fillStyle=i==0 ? "#00ffff" : "#009999"
 
-ctx.fillRect(part.x,part.y,grid,grid)
+ctx.fillRect(dragon[i].x,dragon[i].y,grid,grid)
 
-if(index>0){
-part.x = snake[index-1].x
-part.y = snake[index-1].y
 }
 
-})
+// glowing pearl
+ctx.beginPath()
+ctx.arc(pearl.x+10,pearl.y+10,8,0,Math.PI*2)
+ctx.fillStyle="gold"
+ctx.shadowColor="gold"
+ctx.shadowBlur=15
+ctx.fill()
+ctx.shadowBlur=0
 
 }
 
 document.addEventListener("keydown",function(e){
 
-if(e.key=="ArrowUp"){dx=0;dy=-grid}
-if(e.key=="ArrowDown"){dx=0;dy=grid}
-if(e.key=="ArrowLeft"){dx=-grid;dy=0}
-if(e.key=="ArrowRight"){dx=grid;dy=0}
+if(e.key=="ArrowUp" && dy==0){dx=0;dy=-grid}
+if(e.key=="ArrowDown" && dy==0){dx=0;dy=grid}
+if(e.key=="ArrowLeft" && dx==0){dx=-grid;dy=0}
+if(e.key=="ArrowRight" && dx==0){dx=grid;dy=0}
 
 })
 
