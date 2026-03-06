@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dragon Pearl</title>
+
+<style>
+
+body{
+background:black;
+color:white;
+text-align:center;
+font-family:Arial;
+}
+
+canvas{
+background:#111;
+border:3px solid #00ffff;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🐉 Dragon Pearl</h1>
+<p>Collect the pearls!</p>
+
+<canvas id="game" width="400" height="400"></canvas>
+
+<script>
+
+let canvas = document.getElementById("game")
+let ctx = canvas.getContext("2d")
+
+let grid = 20
+
+let snake = [{x:200,y:200}]
+
+let dx = grid
+let dy = 0
+
+let pearl = {
+x: Math.floor(Math.random()*20)*grid,
+y: Math.floor(Math.random()*20)*grid
+}
+
+function game(){
+
+ctx.clearRect(0,0,400,400)
+
+snake[0].x += dx
+snake[0].y += dy
+
+// eat pearl
+if(snake[0].x==pearl.x && snake[0].y==pearl.y){
+
+snake.push({})
+
+pearl.x = Math.floor(Math.random()*20)*grid
+pearl.y = Math.floor(Math.random()*20)*grid
+
+}
+
+// draw pearl
+ctx.fillStyle="cyan"
+ctx.fillRect(pearl.x,pearl.y,grid,grid)
+
+// draw snake
+ctx.fillStyle="lime"
+
+snake.forEach(function(part,index){
+
+ctx.fillRect(part.x,part.y,grid,grid)
+
+if(index>0){
+part.x = snake[index-1].x
+part.y = snake[index-1].y
+}
+
+})
+
+}
+
+document.addEventListener("keydown",function(e){
+
+if(e.key=="ArrowUp"){dx=0;dy=-grid}
+if(e.key=="ArrowDown"){dx=0;dy=grid}
+if(e.key=="ArrowLeft"){dx=-grid;dy=0}
+if(e.key=="ArrowRight"){dx=grid;dy=0}
+
+})
+
+setInterval(game,120)
+
+</script>
+
+</body>
+</html>
